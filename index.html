@@ -1,0 +1,877 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>一阶三角形高阶网格转换器及其微分求积权系数计算平台</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            margin-top: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+        
+        .description {
+            color: #7f8c8d;
+            font-size: 16px;
+            margin-bottom: 20px;
+        }
+        
+        /* 新增：功能选项卡样式 */
+        .tabs {
+            display: flex;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #3498db;
+        }
+        
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            background: #f8f9fa;
+            border: 1px solid #ddd;
+            border-bottom: none;
+            border-radius: 5px 5px 0 0;
+            margin-right: 5px;
+            font-weight: 600;
+        }
+        
+        .tab.active {
+            background: #3498db;
+            color: white;
+            border-color: #2980b9;
+        }
+        
+        .tab-content {
+            display: none;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .upload-area {
+            border: 2px dashed #3498db;
+            border-radius: 10px;
+            padding: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+            transition: all 0.3s;
+            background: #f8fafc;
+        }
+        
+        .upload-area:hover {
+            background: #e8f4ff;
+            border-color: #2980b9;
+        }
+        
+        .upload-icon {
+            font-size: 48px;
+            color: #3498db;
+            margin-bottom: 15px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        select, input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            background: white;
+        }
+        
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: background 0.3s;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            background: #2980b9;
+        }
+        
+        .btn:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        /* 新增：DQM计算按钮样式 */
+        .btn-dqm {
+            background: #9b59b6;
+        }
+        
+        .btn-dqm:hover {
+            background: #8e44ad;
+        }
+        
+        .progress-area {
+            margin-top: 20px;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            width: 100%;
+            background: #ecf0f1;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 10px;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #2ecc71;
+            width: 0%;
+            transition: width 0.3s;
+        }
+        
+        .status {
+            text-align: center;
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+        
+        .result-area {
+            display: none;
+            margin-top: 30px;
+        }
+        
+        .success-icon {
+            font-size: 48px;
+            color: #2ecc71;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .download-btn {
+            background: #2ecc71;
+            margin-top: 15px;
+        }
+        
+        .download-btn:hover {
+            background: #27ae60;
+        }
+        
+        /* 新增：DQM下载按钮样式 */
+        .download-btn-dqm {
+            background: #9b59b6;
+            margin-top: 10px;
+        }
+        
+        .download-btn-dqm:hover {
+            background: #8e44ad;
+        }
+        
+        .error {
+            color: #e74c3c;
+            text-align: center;
+            margin-top: 15px;
+            display: none;
+            padding: 10px;
+            background: #ffecec;
+            border-radius: 5px;
+            border-left: 4px solid #e74c3c;
+        }
+        
+        .info-box {
+            background: #e8f4ff;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 20px 0;
+            border-left: 4px solid #3498db;
+        }
+        
+        .info-title {
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+        
+        .info-content {
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        /* 可视化区域样式 */
+        .visualization {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .visualization-box {
+            flex: 1;
+            min-width: 300px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 15px;
+            background: #f9f9f9;
+        }
+        
+        .visualization-title {
+            text-align: center;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        
+        .svg-container {
+            width: 100%;
+            height: 300px;
+            border: 1px solid #eee;
+            border-radius: 5px;
+            background: white;
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .svg-container svg {
+            max-width: 100%;
+            max-height: 100%;
+        }
+        
+        .svg-placeholder {
+            color: #7f8c8d;
+            font-style: italic;
+        }
+        
+        /* 登录模态框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .modal-title {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+        
+        .modal-input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            background: white;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .modal-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+        
+        .modal-btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .modal-btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        footer {
+            margin-top: 30px;
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 14px;
+        }
+        
+        @media (max-width: 768px) {
+            .visualization {
+                flex-direction: column;
+            }
+            
+            .visualization-box {
+                min-width: 100%;
+            }
+            
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                margin-bottom: 5px;
+                border-radius: 5px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>一阶三角形高阶网格转换器及其微分求积权系数计算平台</h1>
+        <p class="description">提供高阶网格转换和三角形区域二维DQM权系数计算服务</p>
+    </header>
+    
+    <div class="container">
+        <!-- 功能选项卡 -->
+        <div class="tabs">
+            <div class="tab active" data-tab="mesh">高阶网格转换</div>
+            <div class="tab" data-tab="dqm">DQM计算</div>
+        </div>
+        
+        <!-- 高阶网格转换内容 -->
+        <div class="tab-content active" id="mesh-tab">
+            <div class="info-box">
+                <div class="info-title">使用说明</div>
+                <div class="info-content">
+                    <p>1. 下载示例文件了解数据格式要求</p>
+                    <p>2. 上传您的Excel网格数据文件</p>
+                    <p>3. 选择网格阶数 (2-10)</p>
+                    <p>4. 生成并下载高阶网格结果</p>
+                </div>
+            </div>
+            
+            <button class="btn btn-secondary" id="downloadSampleBtn">下载示例文件 (triangle_mesh_sample.xlsx)</button>
+            
+            <div class="upload-area" id="uploadArea">
+                <div class="upload-icon">📤</div>
+                <p>拖放Excel文件到这里或点击上传</p>
+                <input type="file" id="fileInput" accept=".xlsx" style="display: none;">
+                <button class="btn" id="selectFileBtn">选择文件</button>
+                <p id="fileName" style="margin-top: 10px; font-style: italic; color: #3498db;"></p>
+            </div>
+            
+            <div class="form-group">
+                <label for="order">选择网格阶数 (m):</label>
+                <select id="order">
+                    <option value="2">2阶</option>
+                    <option value="3">3阶</option>
+                    <option value="4">4阶</option>
+                    <option value="5">5阶</option>
+                    <option value="6">6阶</option>
+                    <option value="7">7阶</option>
+                    <option value="8">8阶</option>
+                    <option value="9">9阶</option>
+                    <option value="10">10阶</option>
+                </select>
+            </div>
+            
+            <button class="btn" id="processBtn" disabled>生成高阶网格</button>
+            
+            <div class="error" id="errorMsg">
+                出现错误，请重试。
+            </div>
+            
+            <div class="progress-area" id="progressArea" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+                <div class="status" id="status">处理中... 0%</div>
+            </div>
+            
+            <div class="result-area" id="resultArea">
+                <div class="success-icon">✓</div>
+                <h3 style="text-align: center;">高阶网格生成成功！</h3>
+                <p style="text-align: center;">您可以下载生成的高阶网格数据</p>
+                
+                <div class="visualization">
+                    <div class="visualization-box">
+                        <div class="visualization-title">输入网格可视化</div>
+                        <div class="svg-container" id="inputSvgContainer">
+                            <div class="svg-placeholder">等待生成可视化图形</div>
+                        </div>
+                    </div>
+                    
+                    <div class="visualization-box">
+                        <div class="visualization-title">高阶网格可视化</div>
+                        <div class="svg-container" id="outputSvgContainer">
+                            <div class="svg-placeholder">等待生成可视化图形</div>
+                        </div>
+                    </div>
+                </div>
+                
+                <button class="btn download-btn" id="downloadBtn">下载Excel结果</button>
+            </div>
+        </div>
+        
+        <!-- DQM计算内容 -->
+        <div class="tab-content" id="dqm-tab">
+            <div class="info-box">
+                <div class="info-title">DQM权系数计算说明</div>
+                <div class="info-content">
+                    <p>1. 输入参数m (2-10之间的整数)</p>
+                    <p>2. 输入代数精度algebraPrecision (1-20之间的整数)</p>
+                    <p>3. 点击计算按钮执行DQM计算</p>
+                    <p>4. 下载生成的结果文件</p>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="dqmM">参数 m (2-10):</label>
+                <input type="number" id="dqmM" min="2" max="10" value="5" placeholder="请输入2-10之间的整数">
+            </div>
+            
+            <div class="form-group">
+                <label for="dqmPrecision">代数精度 algebraPrecision (1-20):</label>
+                <input type="number" id="dqmPrecision" min="1" max="20" value="10" placeholder="请输入1-20之间的整数">
+            </div>
+            
+            <button class="btn btn-dqm" id="dqmCalculateBtn">执行DQM计算</button>
+            
+            <div class="error" id="dqmErrorMsg">
+                出现错误，请重试。
+            </div>
+            
+            <div class="progress-area" id="dqmProgressArea" style="display: none;">
+                <div class="progress-bar">
+                    <div class="progress" id="dqmProgress"></div>
+                </div>
+                <div class="status" id="dqmStatus">DQM计算中... 0%</div>
+            </div>
+            
+            <div class="result-area" id="dqmResultArea" style="display: none;">
+                <div class="success-icon">✓</div>
+                <h3 style="text-align: center;">DQM计算成功！</h3>
+                <p style="text-align: center;">您可以下载生成的结果文件</p>
+                
+                <button class="btn download-btn-dqm" id="downloadDqmFile1">下载 c10_c01 结果文件</button>
+                <button class="btn download-btn-dqm" id="downloadDqmFile2">下载 cL 结果文件</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 登录模态框 -->
+    <div class="modal" id="loginModal">
+        <div class="modal-content">
+            <h2 class="modal-title">用户验证</h2>
+            <input type="text" id="username" class="modal-input" placeholder="用户名" required>
+            <input type="password" id="password" class="modal-input" placeholder="密码" required>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-secondary" id="cancelLogin">取消</button>
+                <button class="modal-btn modal-btn-primary" id="confirmLogin">确认</button>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>© 2025 高阶网格与DQM计算平台 | 基于Wolfram和Go技术 | 技术合作QQ: 45159928 </p>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // 选项卡切换功能
+            const tabs = document.querySelectorAll('.tab');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabs.forEach(tab => {
+                tab.addEventListener('click', () => {
+                    // 移除所有active类
+                    tabs.forEach(t => t.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.remove('active'));
+                    
+                    // 添加active类到当前选项卡
+                    tab.classList.add('active');
+                    document.getElementById(`${tab.dataset.tab}-tab`).classList.add('active');
+                });
+            });
+            
+            // 高阶网格转换功能变量
+            const fileInput = document.getElementById('fileInput');
+            const selectFileBtn = document.getElementById('selectFileBtn'); // 修复：添加选择文件按钮引用
+            const uploadArea = document.getElementById('uploadArea');
+            const fileName = document.getElementById('fileName');
+            const orderSelect = document.getElementById('order');
+            const processBtn = document.getElementById('processBtn');
+            const progressArea = document.getElementById('progressArea');
+            const progress = document.getElementById('progress');
+            const status = document.getElementById('status');
+            const resultArea = document.getElementById('resultArea');
+            const errorMsg = document.getElementById('errorMsg');
+            const downloadBtn = document.getElementById('downloadBtn');
+            const downloadSampleBtn = document.getElementById('downloadSampleBtn');
+            const loginModal = document.getElementById('loginModal');
+            const usernameInput = document.getElementById('username');
+            const passwordInput = document.getElementById('password');
+            const cancelLoginBtn = document.getElementById('cancelLogin');
+            const confirmLoginBtn = document.getElementById('confirmLogin');
+            const inputSvgContainer = document.getElementById('inputSvgContainer');
+            const outputSvgContainer = document.getElementById('outputSvgContainer');
+            
+            // DQM计算功能变量
+            const dqmMInput = document.getElementById('dqmM');
+            const dqmPrecisionInput = document.getElementById('dqmPrecision');
+            const dqmCalculateBtn = document.getElementById('dqmCalculateBtn');
+            const dqmErrorMsg = document.getElementById('dqmErrorMsg');
+            const dqmProgressArea = document.getElementById('dqmProgressArea');
+            const dqmProgress = document.getElementById('dqmProgress');
+            const dqmStatus = document.getElementById('dqmStatus');
+            const dqmResultArea = document.getElementById('dqmResultArea');
+            const downloadDqmFile1 = document.getElementById('downloadDqmFile1');
+            const downloadDqmFile2 = document.getElementById('downloadDqmFile2');
+            
+            let selectedFile = null;
+            let authCredentials = null;
+            let currentOrder = 2;
+            let currentOperation = ''; // 记录当前操作类型
+            
+            // 修复：添加选择文件按钮事件监听
+            selectFileBtn.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            // 获取当前主机和端口
+            const getBaseUrl = () => {
+                return window.location.origin;
+            };
+            
+            // 下载示例文件
+            downloadSampleBtn.addEventListener('click', function() {
+                const a = document.createElement('a');
+                a.href = getBaseUrl() + '/triangle_mesh_sample.xlsx';
+                a.download = 'triangle_mesh_sample.xlsx';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+            });
+            
+            // 文件选择处理
+            fileInput.addEventListener('change', function() {
+                if (fileInput.files.length) {
+                    handleFile(fileInput.files[0]);
+                }
+            });
+            
+            // 拖放功能
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                uploadArea.style.background = '#e8f4ff';
+                uploadArea.style.borderColor = '#2980b9';
+            });
+            
+            uploadArea.addEventListener('dragleave', function() {
+                uploadArea.style.background = '#f8fafc';
+                uploadArea.style.borderColor = '#3498db';
+            });
+            
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                uploadArea.style.background = '#f8fafc';
+                uploadArea.style.borderColor = '#3498db';
+                
+                if (e.dataTransfer.files.length) {
+                    handleFile(e.dataTransfer.files[0]);
+                }
+            });
+            
+            // 监听阶数选择变化
+            orderSelect.addEventListener('change', function() {
+                currentOrder = parseInt(this.value);
+            });
+            
+            function handleFile(file) {
+                if (file.name.endsWith('.xlsx')) {
+                    selectedFile = file;
+                    fileName.textContent = `已选择: ${file.name}`;
+                    processBtn.disabled = false;
+                    errorMsg.style.display = 'none';
+                } else {
+                    showError('请选择Excel文件 (.xlsx)');
+                }
+            }
+            
+            // 处理生成按钮点击
+            processBtn.addEventListener('click', function() {
+                if (!selectedFile) {
+                    showError('请先选择文件');
+                    return;
+                }
+                
+                currentOperation = 'mesh';
+                currentOrder = parseInt(orderSelect.value);
+                
+                // 显示登录模态框
+                loginModal.style.display = 'block';
+                usernameInput.value = '';
+                passwordInput.value = '';
+                usernameInput.focus();
+            });
+            
+            // DQM计算功能
+            dqmCalculateBtn.addEventListener('click', function() {
+                const m = parseInt(dqmMInput.value);
+                const precision = parseInt(dqmPrecisionInput.value);
+                
+                if (isNaN(m) || m < 2 || m > 10) {
+                    showDqmError('参数m必须是2-10之间的整数');
+                    return;
+                }
+                
+                if (isNaN(precision) || precision < 1 || precision > 20) {
+                    showDqmError('代数精度必须是1-20之间的整数');
+                    return;
+                }
+                
+                currentOperation = 'dqm';
+                window.dqmParams = { m, precision };
+                
+                // 显示登录模态框
+                loginModal.style.display = 'block';
+                usernameInput.value = '';
+                passwordInput.value = '';
+                usernameInput.focus();
+            });
+            
+            // 取消登录
+            cancelLoginBtn.addEventListener('click', function() {
+                loginModal.style.display = 'none';
+            });
+            
+            // 确认登录
+            confirmLoginBtn.addEventListener('click', function() {
+                const username = usernameInput.value.trim();
+                const password = passwordInput.value.trim();
+                
+                if (!username || !password) {
+                    alert('请输入用户名和密码');
+                    return;
+                }
+                
+                authCredentials = { username, password };
+                loginModal.style.display = 'none';
+                
+                if (currentOperation === 'mesh') {
+                    startProcessing();
+                } else if (currentOperation === 'dqm') {
+                    startDqmProcessing();
+                }
+            });
+            
+            function startProcessing() {
+                const formData = new FormData();
+                formData.append('file', selectedFile);
+                formData.append('order', currentOrder);
+                formData.append('username', authCredentials.username);
+                formData.append('password', authCredentials.password);
+                
+                progressArea.style.display = 'block';
+                resultArea.style.display = 'none';
+                errorMsg.style.display = 'none';
+                
+                let progressValue = 0;
+                const interval = setInterval(() => {
+                    progressValue += 5;
+                    if (progressValue > 90) clearInterval(interval);
+                    updateProgress(progressValue);
+                }, 500);
+                
+                fetch(getBaseUrl() + '/process', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => {
+                    clearInterval(interval);
+                    if (!response.ok) {
+                        if (response.status === 401) throw new Error('用户名或密码错误');
+                        throw new Error(`服务器错误: ${response.status} ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateProgress(100);
+                    if (data.inputSvg) inputSvgContainer.innerHTML = data.inputSvg;
+                    if (data.outputSvg) outputSvgContainer.innerHTML = data.outputSvg;
+                    
+                    downloadBtn.onclick = function() {
+                        const now = new Date();
+                        const timestamp = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}${String(now.getHours()).padStart(2,'0')}${String(now.getMinutes()).padStart(2,'0')}${String(now.getSeconds()).padStart(2,'0')}`;
+                        const filename = `${currentOrder}阶网格_${timestamp}.xlsx`;
+                        
+                        const a = document.createElement('a');
+                        a.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + data.excelData;
+                        a.download = filename;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    };
+                    
+                    setTimeout(() => {
+                        progressArea.style.display = 'none';
+                        resultArea.style.display = 'block';
+                    }, 500);
+                })
+                .catch(error => {
+                    clearInterval(interval);
+                    progressArea.style.display = 'none';
+                    showError('处理失败: ' + error.message);
+                });
+            }
+            
+            function startDqmProcessing() {
+                const { m, precision } = window.dqmParams;
+                
+                // 修复：使用URLSearchParams而不是FormData
+                const params = new URLSearchParams();
+                params.append('m', m);
+                params.append('precision', precision);
+                params.append('username', authCredentials.username);
+                params.append('password', authCredentials.password);
+                
+                dqmProgressArea.style.display = 'block';
+                dqmResultArea.style.display = 'none';
+                dqmErrorMsg.style.display = 'none';
+                
+                let progressValue = 0;
+                const interval = setInterval(() => {
+                    progressValue += 2;
+                    if (progressValue > 90) clearInterval(interval);
+                    updateDqmProgress(progressValue);
+                }, 300);
+                
+                fetch(getBaseUrl() + '/dqm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    body: params.toString()
+                })
+                .then(response => {
+                    clearInterval(interval);
+                    if (!response.ok) {
+                        if (response.status === 401) throw new Error('用户名或密码错误');
+                        throw new Error(`服务器错误: ${response.status} ${response.statusText}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    updateDqmProgress(100);
+                    
+                    downloadDqmFile1.onclick = function() {
+                        const a = document.createElement('a');
+                        a.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + data.file1;
+                        a.download = `c10_c01_order=${m}.xlsx`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    };
+                    
+                    downloadDqmFile2.onclick = function() {
+                        const a = document.createElement('a');
+                        a.href = 'data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64,' + data.file2;
+                        a.download = `cL_algebraPrecision=${precision}.xlsx`;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                    };
+                    
+                    setTimeout(() => {
+                        dqmProgressArea.style.display = 'none';
+                        dqmResultArea.style.display = 'block';
+                    }, 500);
+                })
+                .catch(error => {
+                    clearInterval(interval);
+                    dqmProgressArea.style.display = 'none';
+                    showDqmError('DQM计算失败: ' + error.message);
+                });
+            }
+            
+            function updateProgress(value) {
+                progress.style.width = value + '%';
+                status.textContent = `处理中... ${value}%`;
+            }
+            
+            function updateDqmProgress(value) {
+                dqmProgress.style.width = value + '%';
+                dqmStatus.textContent = `DQM计算中... ${value}%`;
+            }
+            
+            function showError(message) {
+                errorMsg.innerHTML = message;
+                errorMsg.style.display = 'block';
+            }
+            
+            function showDqmError(message) {
+                dqmErrorMsg.innerHTML = message;
+                dqmErrorMsg.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
