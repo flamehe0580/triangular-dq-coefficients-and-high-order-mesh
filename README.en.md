@@ -1,36 +1,18 @@
-# Triangular DQ coefficients and high-order mesh
+# Triangular DQ Coefficients and High-Order Mesh
 
-#### Description
-本项目给出了一个web程序。这个程序可以(1)帮助用户生成高阶三角形网格，(2)计算生成三角形微分求积法权系数所需要的关键系数矩阵。
+#### Introduction  
+This project provides a web application that can (1) assist users in generating high-order triangular meshes, and (2) compute key coefficient matrices required for generating triangular differential quadrature method (DQM) weight coefficients.
 
-#### Software Architecture
-Software architecture description
+#### Software Architecture  
+The backend is developed in Go, while HTML and JavaScript are used for the frontend. Scientific computation functionalities are implemented in Mathematica script files.
 
-#### Installation
+#### Installation Guide  
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
+1. Mathematica 13.0 or higher must be installed.  
+2. Add the directory containing Mathematica’s `math.exe` to the system's `PATH` environment variable.
 
-#### Instructions
+#### Instructions for Use  
 
-1.  xxxx
-2.  xxxx
-3.  xxxx
-
-#### Contribution
-
-1.  Fork the repository
-2.  Create Feat_xxx branch
-3.  Commit your code
-4.  Create Pull Request
-
-
-#### Gitee Feature
-
-1.  You can use Readme\_XXX.md to support different languages, such as Readme\_en.md, Readme\_zh.md
-2.  Gitee blog [blog.gitee.com](https://blog.gitee.com)
-3.  Explore open source project [https://gitee.com/explore](https://gitee.com/explore)
-4.  The most valuable open source project [GVP](https://gitee.com/gvp)
-5.  The manual of Gitee [https://gitee.com/help](https://gitee.com/help)
-6.  The most popular members  [https://gitee.com/gitee-stars/](https://gitee.com/gitee-stars/)
+1. After completing the configuration, run `main.exe` via the command line.  
+2. Access the application at `http://localhost:18085`.  
+3. In the "DQM Calculation" tab, the computed `c10` and `c01` represent the coefficient matrices for the first-order partial derivatives with respect to ξ and η, respectively; `cL` denotes the correction matrix accounting for integration points.
