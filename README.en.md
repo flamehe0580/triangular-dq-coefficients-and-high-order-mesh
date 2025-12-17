@@ -1,6 +1,6 @@
 # Triangular DQ Coefficients and High-Order Mesh
 
-#### Introduction  
+#### Introduction 
 This project provides a web application that can (1) assist users in generating high-order triangular meshes, and (2) compute key coefficient matrices required for generating triangular differential quadrature method (DQM) weight coefficients.
 
 #### Software Architecture  
