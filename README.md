@@ -1,19 +1,18 @@
-# Triangular DQ coefficients and high-order mesh
+# Triangular DQ Coefficients and High-Order Mesh
 
-#### 介绍
-本项目给出了一个web程序。这个程序可以(1)帮助用户生成高阶三角形网格，(2)计算生成三角形微分求积法权系数所需要的关键系数矩阵。
+#### Introduction 
+This project provides a web application that can (1) assist users in generating high-order triangular meshes, and (2) compute key coefficient matrices required for generating triangular differential quadrature method (DQM) weight coefficients.
 
-#### 软件架构
-采用go语言编写后端程序。html+JavaScript作为后端。与科学计算有关的功能定义在mathematica的脚本文件。
+#### Software Architecture  
+The backend is developed in Go, while HTML and JavaScript are used for the frontend. Scientific computation functionalities are implemented in Mathematica script files.
 
+#### Installation Guide  
 
-#### 安装教程
+1. Mathematica 13.0 or higher must be installed.  
+2. Add the directory containing Mathematica’s `math.exe` to the system's `PATH` environment variable.
 
-1.  必须安装Mathematica 13.0及以上版本
-2.  将Mathematica的math.exe所在路径添加到系统的环境变量path内。
+#### Instructions for Use  
 
-#### 使用说明
-
-1.  配置完后之后，用命令行运行main.exe
-2.  访问http://localhost:18085
-3.  在DQM计算标签中，计算得到的c10和c01分别表示关于ξ和η一阶偏导的系数矩阵；cL表示考虑积分点的修正矩阵。
+1. After completing the configuration, run `main.exe` via the command line.  
+2. Access the application at `http://localhost:18085`.  
+3. In the "DQM Calculation" tab, the computed `c10` and `c01` represent the coefficient matrices for the first-order partial derivatives with respect to ξ and η, respectively; `cL` denotes the correction matrix accounting for integration points.
